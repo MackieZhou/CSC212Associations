@@ -37,6 +37,7 @@ public class IntBST {
 
 	/**
 	 * A tree is empty if it's root is null.
+	 * 
 	 * @return - compare this root to null.
 	 */
 	public boolean isEmpty() {
@@ -45,6 +46,7 @@ public class IntBST {
 
 	/**
 	 * Ask root to compute its height, if available.
+	 * 
 	 * @return 0 if empty, the height of the tree otherwise.
 	 */
 	public int getHeight() {
@@ -56,6 +58,7 @@ public class IntBST {
 
 	/**
 	 * Ask root to insert this value into the tree if possible.
+	 * 
 	 * @param value - the value to insert.
 	 */
 	public void insert(int value) {
@@ -68,6 +71,7 @@ public class IntBST {
 
 	/**
 	 * Ask root if this value is contained in the tree.
+	 * 
 	 * @param value - the value to look for.
 	 * @return true if it is found, false if not.
 	 */
@@ -80,7 +84,9 @@ public class IntBST {
 	}
 
 	/**
-	 * Start off an in-order traversal; create a list to use with {@link BSTNode#addToSortedList}
+	 * Start off an in-order traversal; create a list to use with
+	 * {@link BSTNode#addToSortedList}
+	 * 
 	 * @return a sorted list of nodes.
 	 */
 	public List<Integer> toSortedList() {
@@ -178,12 +184,21 @@ public class IntBST {
 		 * @return an integer greater than or equal to 1.
 		 */
 		public int getHeight() {
-			throw new TODOErr();
+			if (this.left == null && this.right == null) {
+				return 1;
+			} else if (this.left == null) {
+				return 1 + this.right.getHeight();
+			} else if (this.right == null) {
+				return 1 + this.left.getHeight();
+			} else {
+				return 1 + Math.max(this.left.getHeight(), this.right.getHeight());
+			}
 		}
 		//// end
 
 		/**
 		 * Recursively find the position in this tree of BSTNodes to insert the value.
+		 * 
 		 * @param value - an integer to insert.
 		 * @return true if we changed the tree.
 		 */
@@ -232,7 +247,18 @@ public class IntBST {
 		 * @param output - a list.
 		 */
 		public void addToSortedList(List<Integer> output) {
-			throw new TODOErr();
+			// first add everything to the left
+			if (this.left != null) {
+				this.left.addToSortedList(output);
+			}
+			
+			// add this node
+			output.add(this.value);
+			
+			// at last, add everything to the right
+			if (this.right != null) {
+				this.right.addToSortedList(output);
+			}
 		}
 		//// end
 
@@ -296,7 +322,18 @@ public class IntBST {
 		 * @return true if found, false if not found.
 		 */
 		public boolean contains(int value) {
-			throw new TODOErr();
+			if (this.value == value) {
+				return true;
+
+			} else if (this.value <= value && this.right != null) {
+				return this.right.contains(value);
+
+			} else if (value <= this.value && this.left != null) {
+				return this.left.contains(value);
+
+			} else {
+				return false;
+			}
 		}
 		//// end
 
