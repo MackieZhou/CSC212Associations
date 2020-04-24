@@ -141,7 +141,15 @@ public abstract class IntExpr {
 		@Override
 		public int evaluate() {
 			if (op.equals("+")) {
-				throw new TODOErr();
+				return this.left.evaluate() + this.right.evaluate();
+			} else if (op.equals("-")) {
+				return this.left.evaluate() - this.right.evaluate();
+			} else if (op.equals("*")) {
+				return this.left.evaluate() * this.right.evaluate();
+			} else if (op.equals("/")) {
+				return this.left.evaluate() / this.right.evaluate();
+			} else if (op.equals("%")) {
+				return this.left.evaluate() % this.right.evaluate();
 			}
 			throw new RuntimeException("Unsupported operator=" + op);
 		}
