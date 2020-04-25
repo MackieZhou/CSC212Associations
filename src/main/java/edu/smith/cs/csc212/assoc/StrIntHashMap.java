@@ -20,7 +20,8 @@ import static org.junit.Assert.assertEquals;
 
 public class StrIntHashMap extends MapADT<String, Integer> {
 	/**
-	 * This is our array of buckets; each cell is the "start" of a Singly-Linked-List!
+	 * This is our array of buckets; each cell is the "start" of a
+	 * Singly-Linked-List!
 	 */
 	ArrayWrapper<EntryNode> buckets;
 
@@ -45,6 +46,7 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 
 	/**
 	 * Private helper method: into which bucket does this key belong?
+	 * 
 	 * @param key - a string key.
 	 * @return - the bucket index it would be in if we had it.
 	 */
@@ -54,6 +56,7 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 
 	/**
 	 * What percentage of the buckets in this HashMap are used?
+	 * 
 	 * @return numUsedBuckets / numBuckets.
 	 */
 	private double loadFactor() {
@@ -61,10 +64,9 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 	}
 
 	/**
-	 * Resize method goals:
-	 *  - create new array of buckets (bigger or smaller!)
-	 *  - re-hash all elements into new array
-	 *  - make sure size/numUsedBuckets are still consistent.
+	 * Resize method goals: - create new array of buckets (bigger or smaller!) -
+	 * re-hash all elements into new array - make sure size/numUsedBuckets are still
+	 * consistent.
 	 *
 	 * @param newNumBuckets - tells us whether we're growing or shrinking.
 	 */
@@ -75,7 +77,7 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 		this.numUsedBuckets = 0;
 
 		// for all old buckets:
-		for (int i=0; i<oldBuckets.size(); i++) {
+		for (int i = 0; i < oldBuckets.size(); i++) {
 			// for all entries in those buckets:
 			for (EntryNode n = oldBuckets.getIndex(i); n != null; n = n.next) {
 				// find-new-bucket:
@@ -114,14 +116,25 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 	//// start:put
 	@Override
 	public void put(String key, @Nonnull Integer value) {
-			// 1. Calculate which bucket contains our key.
-			// 2. Get the list of entries in that bucket:
-			// 3. Search the list for the pair we want:
-			// 3.a. If found, update the node and leave this method early.
-			// 3.b. If not found, add our key, value to the front of this list! O(1).
-			// 4. Need to update our sizes manually! (and call maybeGrow)
-			throw new TODOErr();
+		// 1. Calculate which bucket contains our key.
+		int i = whichBucket(key);
 
+		// 3. Search the list for the pair we want:
+		EntryNode thisBucket = buckets.getIndex(i);
+		for (EntryNode node = thisBucket; node != null; node = node.next) {
+			// 3.a. If found, update the node and leave this method early.
+			if (node.key == key) {
+				node.value = value;
+				return;
+			}
+		}
+		// 3.b. If not found, add our key, value to the front of this list! O(1).
+		EntryNode newNode = new EntryNode(key, value, thisBucket);
+		buckets.setIndex(i, newNode);
+
+		// 4. Need to update our sizes manually! (and call maybeGrow)
+		this.size++;
+		maybeGrow();
 	}
 	//// end
 
@@ -133,11 +146,17 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 	@Nullable
 	public Integer get(String key) {
 		// 1. Calculate which bucket contains our key.
+		int i = whichBucket(key);
 		// 2. Get the list of entries in that bucket:
 		// 3. Search the list for the pair we want:
-		// 3.a. If we find it, return the value being stored!
+		for (EntryNode n = buckets.getIndex(i); n != null; n = n.next) {
+			// 3.a. If we find it, return the value being stored!
+			if (n.key.equals(key)) {
+				return n.value;
+			}
+		}
 		// 3.b. If we don't find it, return null!
-		throw new TODOErr();
+		return null;
 	}
 	//// end
 
@@ -152,7 +171,8 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 		// 2. Get the list of entries in that bucket:
 		EntryNode start = this.buckets.getIndex(bucket);
 
-		// 3. Search the list for the pair we want, and delete it. (Remember: Singly-Linked-List removeIndex).
+		// 3. Search the list for the pair we want, and delete it. (Remember:
+		// Singly-Linked-List removeIndex).
 		EntryNode previous = null;
 		for (EntryNode current = start; current != null; current = current.next) {
 			if (current.matches(key)) {
@@ -185,7 +205,7 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 	@Override
 	public ListADT<String> getKeys() {
 		ListADT<String> keys = new JavaList<>();
-		for (int i=0; i<buckets.size(); i++) {
+		for (int i = 0; i < buckets.size(); i++) {
 			for (EntryNode n = buckets.getIndex(i); n != null; n = n.next) {
 				keys.addBack(n.key);
 			}
@@ -196,7 +216,7 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 	@Override
 	public ListADT<Pair<String, Integer>> getEntries() {
 		ListADT<Pair<String, Integer>> entries = new JavaList<>();
-		for (int i=0; i<buckets.size(); i++) {
+		for (int i = 0; i < buckets.size(); i++) {
 			for (EntryNode n = buckets.getIndex(i); n != null; n = n.next) {
 				entries.addBack(n.getPair());
 			}
@@ -229,6 +249,7 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 
 		/**
 		 * Helper method for comparing keys when searching.
+		 * 
 		 * @param key - the key we're looking for.
 		 * @return true if it matches the key in this EntryNode.
 		 */
@@ -239,6 +260,7 @@ public class StrIntHashMap extends MapADT<String, Integer> {
 
 		/**
 		 * Helper method for getEntries(): turn this into a Pair object.
+		 * 
 		 * @return (key, value)
 		 */
 		public Pair<String, Integer> getPair() {
